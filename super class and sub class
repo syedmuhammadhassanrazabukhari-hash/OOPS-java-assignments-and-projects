@@ -1,0 +1,486 @@
+import java.util.ArrayList;
+import java.util.List;
+
+interface Drivable {
+    void startEngine();
+    void stopEngine();
+    void accelerate(double speed);
+}
+
+interface Maintainable {
+    void serviceVehicle();
+    void serviceVehicle(String serviceType);
+}
+
+interface OffRoadCapable {
+    void enable4WD();
+    void disable4WD();
+}
+
+class Point {
+    private double x;
+    private double y;
+    private double z;
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+        this.z = 0.0;
+    }
+
+    public Point(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getZ() { return z; }
+
+    public double distanceTo(Point other) {
+        double dx = this.x - other.x;
+        double dy = this.y - other.y;
+        double dz = this.z - other.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    public void display() {
+        System.out.println("Point Coordinates: (" + x + ", " + y + ", " + z + ")");
+    }
+}
+
+class Line {
+    private Point start;
+    private Point end;
+
+    public Line(Point start, Point end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public double getLength() {
+        return start.distanceTo(end);
+    }
+
+    public void display() {
+        System.out.println("Line: [Start: (" + start.getX() + ", " + start.getY() + ") -> End: (" 
+                + end.getX() + ", " + end.getY() + ")] | Length: " + String.format("%.2f", getLength()));
+    }
+}
+
+class Triangle {
+    private Point p1;
+    private Point p2;
+    private Point p3;
+
+    public Triangle(Point p1, Point p2, Point p3) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
+    }
+
+    public double getPerimeter() {
+        double side1 = p1.distanceTo(p2);
+        double side2 = p2.distanceTo(p3);
+        double side3 = p3.distanceTo(p1);
+        return side1 + side2 + side3;
+    }
+
+    public double getArea() {
+        double side1 = p1.distanceTo(p2);
+        double side2 = p2.distanceTo(p3);
+        double side3 = p3.distanceTo(p1);
+        double s = getPerimeter() / 2.0;
+        return Math.sqrt(s * (s - side1) * (s - side2) * (s - side3));
+    }
+
+    public void display() {
+        System.out.println("Triangle | Area: " + String.format("%.2f", getArea()) 
+                + " | Perimeter: " + String.format("%.2f", getPerimeter()));
+    }
+}
+
+class Square {
+    private Point topLeft;
+    private double sideLength;
+
+    public Square(Point topLeft, double sideLength) {
+        this.topLeft = topLeft;
+        this.sideLength = sideLength;
+    }
+
+    public double getArea() {
+        return sideLength * sideLength;
+    }
+
+    public double getPerimeter() {
+        return 4 * sideLength;
+    }
+
+    public void display() {
+        System.out.println("Square [Top-Left: (" + topLeft.getX() + ", " + topLeft.getY() 
+                + "), Side: " + sideLength + "] | Area: " + String.format("%.2f", getArea()) 
+                + " | Perimeter: " + String.format("%.2f", getPerimeter()));
+    }
+}
+
+class Sphere {
+    private Point center;
+    private double radius;
+
+    public Sphere(Point center, double radius) {
+        this.center = center;
+        this.radius = radius;
+    }
+
+    public double getVolume() {
+        return (4.0 / 3.0) * Math.PI * Math.pow(radius, 3);
+    }
+
+    public double getSurfaceArea() {
+        return 4.0 * Math.PI * Math.pow(radius, 2);
+    }
+
+    public void display() {
+        System.out.println("Sphere [Center: (" + center.getX() + ", " + center.getY() + ", " + center.getZ() 
+                + "), Radius: " + radius + "] | Volume: " + String.format("%.2f", getVolume()) 
+                + " | Surface Area: " + String.format("%.2f", getSurfaceArea()));
+    }
+}
+
+class Vehicle implements Drivable, Maintainable {
+    protected String make;
+    protected String model;
+    protected int year;
+    protected double currentSpeed;
+    protected boolean isEngineRunning;
+
+    public Vehicle(String make, String model, int year) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
+        this.currentSpeed = 0.0;
+        this.isEngineRunning = false;
+    }
+
+    @Override
+    public void startEngine() {
+        this.isEngineRunning = true;
+        System.out.println("[Vehicle] " + getFullName() + " engine started.");
+    }
+
+    @Override
+    public void stopEngine() {
+        this.isEngineRunning = false;
+        this.currentSpeed = 0.0;
+        System.out.println("[Vehicle] " + getFullName() + " engine shut down.");
+    }
+
+    @Override
+    public void accelerate(double speed) {
+        if (!isEngineRunning) {
+            System.out.println("[Vehicle] Cannot accelerate " + getFullName() + ". Engine is off!");
+            return;
+        }
+        this.currentSpeed += speed;
+        System.out.println("[Vehicle] " + getFullName() + " accelerated by " + speed 
+                + " km/h. Current speed: " + currentSpeed + " km/h.");
+    }
+
+    @Override
+    public void serviceVehicle() {
+        System.out.println("[Vehicle] Performing standard maintenance on " + getFullName() + ".");
+    }
+
+    @Override
+    public void serviceVehicle(String serviceType) {
+        System.out.println("[Vehicle] Performing specialized " + serviceType + " service on " + getFullName() + ".");
+    }
+
+    public void displaySpecs() {
+        System.out.println("Vehicle Specs: " + year + " " + make + " " + model 
+                + " | Current Speed: " + currentSpeed + " km/h");
+    }
+
+    public void soundHorn() {
+        System.out.println("[Vehicle] Standard Beep Beep!");
+    }
+
+    public void refuel() {
+        System.out.println("[Vehicle] Refueling " + getFullName() + " with standard grade fuel to maximum capacity.");
+    }
+
+    public void refuel(double liters) {
+        System.out.println("[Vehicle] Added " + liters + " liters of standard fuel to " + getFullName() + ".");
+    }
+
+    public void refuel(double liters, String fuelType) {
+        System.out.println("[Vehicle] Added " + liters + " liters of " + fuelType + " fuel to " + getFullName() + ".");
+    }
+
+    public void refuel(String fuelType, double costPerLiter) {
+        System.out.println("[Vehicle] Filling " + getFullName() + " with " + fuelType + " at $" + costPerLiter + " per liter.");
+    }
+
+    public String getFullName() {
+        return year + " " + make + " " + model;
+    }
+}
+
+class Car extends Vehicle {
+    protected int doorCount;
+    protected int seatingCapacity;
+
+    public Car(String make, String model, int year, int doorCount, int seatingCapacity) {
+        super(make, model, year);
+        this.doorCount = doorCount;
+        this.seatingCapacity = seatingCapacity;
+    }
+
+    @Override
+    public void displaySpecs() {
+        System.out.println("Car Specs: " + year + " " + make + " " + model 
+                + " | Doors: " + doorCount + " | Seats: " + seatingCapacity);
+    }
+
+    @Override
+    public void soundHorn() {
+        System.out.println("[Car] Honk Honk!");
+    }
+
+    public void driveMode() {
+        System.out.println("[Car] Switched to Normal Drive Mode.");
+    }
+
+    public void driveMode(String mode) {
+        System.out.println("[Car] Switched drive mode to custom preset: " + mode + ".");
+    }
+
+    public void driveMode(String mode, boolean tractionControl) {
+        System.out.println("[Car] Switched to " + mode + " Mode. Traction Control: " 
+                + (tractionControl ? "ON" : "OFF") + ".");
+    }
+}
+
+class Sedan extends Car {
+    private double trunkCapacityLiters;
+    private boolean luxuryInterior;
+
+    public Sedan(String make, String model, int year, double trunkCapacityLiters, boolean luxuryInterior) {
+        super(make, model, year, 4, 5);
+        this.trunkCapacityLiters = trunkCapacityLiters;
+        this.luxuryInterior = luxuryInterior;
+    }
+
+    @Override
+    public void displaySpecs() {
+        System.out.println("Sedan Specs: " + year + " " + make + " " + model 
+                + " | Trunk: " + trunkCapacityLiters + "L | Luxury Package: " 
+                + (luxuryInterior ? "Yes" : "No"));
+    }
+
+    @Override
+    public void soundHorn() {
+        System.out.println("[Sedan] Smooth Soft Honk...");
+    }
+
+    public void openTrunk() {
+        System.out.println("[Sedan] Trunk manually opened.");
+    }
+
+    public void openTrunk(boolean useKeyFob) {
+        if (useKeyFob) {
+            System.out.println("[Sedan] Trunk popped remotely using Smart Key Fob.");
+        } else {
+            openTrunk();
+        }
+    }
+
+    public void openTrunk(String gesture) {
+        System.out.println("[Sedan] Trunk opened using " + gesture + " foot-sensor activation.");
+    }
+}
+
+class SUV extends Car implements OffRoadCapable {
+    private boolean is4WDActive;
+    private double groundClearanceInches;
+
+    public SUV(String make, String model, int year, double groundClearanceInches) {
+        super(make, model, year, 4, 7);
+        this.is4WDActive = false;
+        this.groundClearanceInches = groundClearanceInches;
+    }
+
+    @Override
+    public void displaySpecs() {
+        System.out.println("SUV Specs: " + year + " " + make + " " + model 
+                + " | Ground Clearance: " + groundClearanceInches + " in | 4WD Status: " 
+                + (is4WDActive ? "ENGAGED" : "DISENGAGED"));
+    }
+
+    @Override
+    public void soundHorn() {
+        System.out.println("[SUV] Deep Loud Horn BARK!");
+    }
+
+    @Override
+    public void enable4WD() {
+        this.is4WDActive = true;
+        System.out.println("[SUV] 4WD System engaged. Transfer case locked.");
+    }
+
+    @Override
+    public void disable4WD() {
+        this.is4WDActive = false;
+        System.out.println("[SUV] 4WD System disengaged. Reverted to 2WD mode.");
+    }
+
+    public void calculateTowingLimit() {
+        System.out.println("[SUV] Standard towing limit: 3,500 lbs.");
+    }
+
+    public void calculateTowingLimit(boolean hasTowPackage) {
+        double limit = hasTowPackage ? 7500.0 : 3500.0;
+        System.out.println("[SUV] Towing limit with package option: " + limit + " lbs.");
+    }
+
+    public void calculateTowingLimit(double cargoWeight, int passengers) {
+        double maxCapacity = 7500.0 - (cargoWeight + (passengers * 150.0));
+        System.out.println("[SUV] Available towing allowance under current load: " + maxCapacity + " lbs.");
+    }
+}
+
+class Motorcycle extends Vehicle {
+    private boolean hasSidecar;
+    private String handlebarType;
+
+    public Motorcycle(String make, String model, int year, String handlebarType, boolean hasSidecar) {
+        super(make, model, year);
+        this.handlebarType = handlebarType;
+        this.hasSidecar = hasSidecar;
+    }
+
+    public Motorcycle(String make, String model, int year, String handlebarType) {
+        this(make, model, year, handlebarType, false);
+    }
+
+    @Override
+    public void displaySpecs() {
+        System.out.println("Motorcycle Specs: " + year + " " + make + " " + model 
+                + " | Handlebars: " + handlebarType + " | Sidecar: " 
+                + (hasSidecar ? "Attached" : "None"));
+    }
+
+    @Override
+    public void soundHorn() {
+        System.out.println("[Motorcycle] Sharp High-Pitched Meep Meep!");
+    }
+
+    public void performWheelie() {
+        System.out.println("[Motorcycle] Popped a basic wheelie!");
+    }
+
+    public void performWheelie(double distanceMeters) {
+        System.out.println("[Motorcycle] Maintained wheelie balance for " + distanceMeters + " meters!");
+    }
+
+    public void performWheelie(double distanceMeters, String style) {
+        System.out.println("[Motorcycle] Performed a " + style + " style wheelie across " + distanceMeters + " meters!");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=======================================================");
+        System.out.println("            GEOMETRIC SHAPES DEMO                      ");
+        System.out.println("=======================================================\n");
+
+        Point p1 = new Point(0, 0);
+        Point p2 = new Point(3, 4);
+        Point p3 = new Point(0, 4);
+        Point center3D = new Point(1, 2, 3);
+
+        p1.display();
+        p2.display();
+        System.out.println();
+
+        Line line = new Line(p1, p2);
+        line.display();
+        System.out.println();
+
+        Triangle triangle = new Triangle(p1, p2, p3);
+        triangle.display();
+        System.out.println();
+
+        Square square = new Square(p1, 5.0);
+        square.display();
+        System.out.println();
+
+        Sphere sphere = new Sphere(center3D, 4.0);
+        sphere.display();
+        System.out.println();
+
+        System.out.println("=======================================================");
+        System.out.println("         OBJECT-ORIENTED VEHICLE FLEET DEMO            ");
+        System.out.println("=======================================================\n");
+
+        Car mercedesAMG = new Car("Mercedes-AMG", "GT Coupe", 2024, 2, 2);
+        Sedan mercedesSClass = new Sedan("Mercedes-Benz", "S-Class S580", 2025, 535.0, true);
+        Sedan toyotaCamry = new Sedan("Toyota", "Camry XSE", 2023, 427.5, false);
+        SUV gWagon = new SUV("Mercedes-Benz", "G-Class G63 AMG", 2024, 9.5);
+        SUV cadillacEscalade = new SUV("Cadillac", "Escalade ESV", 2023, 8.0);
+        Motorcycle yamahaR1 = new Motorcycle("Yamaha", "YZF-R1", 2024, "Clip-on");
+        Motorcycle harleyDavidson = new Motorcycle("Harley-Davidson", "Street Glide", 2022, "Ape Hanger", false);
+
+        mercedesAMG.refuel();
+        mercedesAMG.refuel(65.5);
+        mercedesAMG.refuel(65.5, "93 Octane Premium Unleaded");
+        mercedesAMG.refuel("100 Octane Race Fuel", 4.25);
+        System.out.println();
+
+        mercedesSClass.driveMode();
+        mercedesSClass.driveMode("Sport Plus");
+        mercedesSClass.driveMode("Eco Pro", false);
+        System.out.println();
+
+        toyotaCamry.openTrunk();
+        toyotaCamry.openTrunk(true);
+        toyotaCamry.openTrunk("Hands-free Kick");
+        System.out.println();
+
+        gWagon.calculateTowingLimit();
+        gWagon.calculateTowingLimit(true);
+        gWagon.calculateTowingLimit(500.0, 4);
+        System.out.println();
+
+        yamahaR1.performWheelie();
+        yamahaR1.performWheelie(150.0);
+        yamahaR1.performWheelie(300.0, "Stand-up");
+        System.out.println();
+
+        gWagon.enable4WD();
+        gWagon.serviceVehicle();
+        gWagon.serviceVehicle("Diff Lock Fluid Change");
+        gWagon.disable4WD();
+        System.out.println();
+
+        List<Vehicle> fleet = new ArrayList<>();
+        fleet.add(mercedesAMG);
+        fleet.add(mercedesSClass);
+        fleet.add(toyotaCamry);
+        fleet.add(gWagon);
+        fleet.add(cadillacEscalade);
+        fleet.add(yamahaR1);
+        fleet.add(harleyDavidson);
+
+        for (Vehicle vehicle : fleet) {
+            vehicle.displaySpecs();
+            vehicle.startEngine();
+            vehicle.soundHorn();
+            vehicle.accelerate(50);
+            vehicle.stopEngine();
+            System.out.println("-------------------------------------------------------");
+        }
+    }
+}
