@@ -1,0 +1,78 @@
+class CustomObject implements Cloneable {
+    private int id;
+    private String name;
+
+    public CustomObject(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomObject{id=" + id + ", name='" + name + "'}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        CustomObject other = (CustomObject) obj;
+        return id == other.id && (name != null ? name.equals(other.name) : other.name == null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(id);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
+    @SuppressWarnings("removal")
+    protected void finalize() throws Throwable {
+        try {
+            System.out.println("CustomObject instance (id=" + id + ") finalized/garbage collected.");
+        } finally {
+            super.finalize();
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        CustomObject obj1 = new CustomObject(101, "Alpha");
+        CustomObject obj2 = new CustomObject(101, "Alpha");
+        CustomObject obj3 = new CustomObject(102, "Beta");
+
+        System.out.println("--- toString() ---");
+        System.out.println("obj1: " + obj1.toString());
+
+        System.out.println("\n--- equals() ---");
+        System.out.println("obj1 equals obj2: " + obj1.equals(obj2));
+        System.out.println("obj1 equals obj3: " + obj1.equals(obj3));
+
+        System.out.println("\n--- hashCode() ---");
+        System.out.println("obj1 hashCode: " + obj1.hashCode());
+        System.out.println("obj2 hashCode: " + obj2.hashCode());
+        System.out.println("obj3 hashCode: " + obj3.hashCode());
+
+        System.out.println("\n--- clone() ---");
+        try {
+            CustomObject clonedObj = (CustomObject) obj1.clone();
+            System.out.println("Cloned Object: " + clonedObj);
+            System.out.println("Is clone equal to original? " + obj1.equals(clonedObj));
+            System.out.println("Are memory addresses different? " + (obj1 != clonedObj));
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("\n--- finalize() ---");
+        obj3 = null;
+        System.gc(); 
+    }
+}
