@@ -1,0 +1,197 @@
+class Point {
+    private double x;
+    private double y;
+    private double z;
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+        this.z = 0.0;
+    }
+
+    public Point(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public double distanceTo(Point other) {
+        double dx = this.x - other.x;
+        double dy = this.y - other.y;
+        double dz = this.z - other.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    @Override
+    public String toString() {
+        return "Point(" + x + ", " + y + ", " + z + ")";
+    }
+}
+
+class Line {
+    private Point start;
+    private Point end;
+
+    public Line(Point start, Point end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public Point getStart() {
+        return start;
+    }
+
+    public Point getEnd() {
+        return end;
+    }
+
+    public double getLength() {
+        return start.distanceTo(end);
+    }
+
+    @Override
+    public String toString() {
+        return "Line[Start: " + start + ", End: " + end + ", Length: " + String.format("%.2f", getLength()) + "]";
+    }
+}
+
+class Triangle {
+    private Line sideA;
+    private Line sideB;
+    private Line sideC;
+
+    public Triangle(Point p1, Point p2, Point p3) {
+        this.sideA = new Line(p1, p2);
+        this.sideB = new Line(p2, p3);
+        this.sideC = new Line(p3, p1);
+    }
+
+    public double getPerimeter() {
+        return sideA.getLength() + sideB.getLength() + sideC.getLength();
+    }
+
+    public double getArea() {
+        double a = sideA.getLength();
+        double b = sideB.getLength();
+        double c = sideC.getLength();
+        double s = getPerimeter() / 2.0;
+        return Math.sqrt(s * (s - a) * (s - b) * (s - c));
+    }
+
+    @Override
+    public String toString() {
+        return "Triangle[\n  Side A: " + sideA + ",\n  Side B: " + sideB + ",\n  Side C: " + sideC 
+                + ",\n  Perimeter: " + String.format("%.2f", getPerimeter()) 
+                + ",\n  Area: " + String.format("%.2f", getArea()) + "\n]";
+    }
+}
+
+class Square {
+    private Line side1;
+    private Line side2;
+    private Line side3;
+    private Line side4;
+
+    public Square(Point topLeft, double sideLength) {
+        Point topRight = new Point(topLeft.getX() + sideLength, topLeft.getY());
+        Point bottomRight = new Point(topLeft.getX() + sideLength, topLeft.getY() - sideLength);
+        Point bottomLeft = new Point(topLeft.getX(), topLeft.getY() - sideLength);
+
+        this.side1 = new Line(topLeft, topRight);
+        this.side2 = new Line(topRight, bottomRight);
+        this.side3 = new Line(bottomRight, bottomLeft);
+        this.side4 = new Line(bottomLeft, topLeft);
+    }
+
+    public double getSideLength() {
+        return side1.getLength();
+    }
+
+    public double getPerimeter() {
+        return 4 * getSideLength();
+    }
+
+    public double getArea() {
+        return getSideLength() * getSideLength();
+    }
+
+    @Override
+    public String toString() {
+        return "Square[\n  Top: " + side1 + ",\n  Right: " + side2 + ",\n  Bottom: " + side3 + ",\n  Left: " + side4 
+                + ",\n  Perimeter: " + String.format("%.2f", getPerimeter()) 
+                + ",\n  Area: " + String.format("%.2f", getArea()) + "\n]";
+    }
+}
+
+class Sphere {
+    private Point center;
+    private double radius;
+
+    public Sphere(Point center, double radius) {
+        this.center = center;
+        this.radius = radius;
+    }
+
+    public double getVolume() {
+        return (4.0 / 3.0) * Math.PI * Math.pow(radius, 3);
+    }
+
+    public double getSurfaceArea() {
+        return 4.0 * Math.PI * Math.pow(radius, 2);
+    }
+
+    @Override
+    public String toString() {
+        return "Sphere[Center: " + center + ", Radius: " + radius 
+                + ", Volume: " + String.format("%.2f", getVolume()) 
+                + ", Surface Area: " + String.format("%.2f", getSurfaceArea()) + "]";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Point p1 = new Point(0, 0);
+        Point p2 = new Point(3, 0);
+        Point p3 = new Point(0, 4);
+        Point center3D = new Point(2, 3, 5);
+
+        Line line = new Line(p1, p2);
+        Triangle triangle = new Triangle(p1, p2, p3);
+        Square square = new Square(p1, 5.0);
+        Sphere sphere = new Sphere(center3D, 4.0);
+
+        System.out.println("--- POINT INSTANCES ---");
+        System.out.println(p1);
+        System.out.println(p2);
+        System.out.println(p3);
+        System.out.println(center3D);
+        System.out.println();
+
+        System.out.println("--- LINE INSTANCE ---");
+        System.out.println(line);
+        System.out.println();
+
+        System.out.println("--- TRIANGLE INSTANCE ---");
+        System.out.println(triangle);
+        System.out.println();
+
+        System.out.println("--- SQUARE INSTANCE ---");
+        System.out.println(square);
+        System.out.println();
+
+        System.out.println("--- SPHERE INSTANCE ---");
+        System.out.println(sphere);
+    }
+}
