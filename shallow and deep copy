@@ -1,0 +1,71 @@
+class Engine {
+    String type;
+
+    public Engine(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return type;
+    }
+}
+
+class Car implements Cloneable {
+    String model;
+    Engine engine;
+
+    public Car(String model, Engine engine) {
+        this.model = model;
+        this.engine = engine;
+    }
+
+    // 1. Shallow Copy (Copies field values directly; object references are shared)
+    public Car shallowCopy() {
+        return new Car(this.model, this.engine);
+    }
+
+    // 2. Deep Copy (Creates new nested objects so memory addresses are separate)
+    public Car deepCopy() {
+        Engine newEngine = new Engine(this.engine.type);
+        return new Car(this.model, newEngine);
+    }
+
+    @Override
+    public String toString() {
+        return "Car[Model: " + model + ", Engine: " + engine + "]";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Engine v8 = new Engine("V8 Twin Turbo");
+        Car originalCar = new Car("Sports Coupe", v8);
+
+        // --- SHALLOW COPY DEMO ---
+        Car shallowCar = originalCar.shallowCopy();
+
+        System.out.println("--- BEFORE MODIFICATION ---");
+        System.out.println("Original: " + originalCar);
+        System.out.println("Shallow:  " + shallowCar);
+
+        // Modifying the shared nested Engine object
+        shallowCar.engine.type = "V6 Hybrid";
+
+        System.out.println("\n--- AFTER MODIFYING SHALLOW COPY ENGINE ---");
+        System.out.println("Original: " + originalCar + "  <-- Affected!");
+        System.out.println("Shallow:  " + shallowCar);
+
+        // --- DEEP COPY DEMO ---
+        Engine v12 = new Engine("V12 Naturally Aspirated");
+        Car originalCar2 = new Car("Luxury Sedan", v12);
+        Car deepCar = originalCar2.deepCopy();
+
+        // Modifying the deep-copied Engine object
+        deepCar.engine.type = "Electric Dual Motor";
+
+        System.out.println("\n--- AFTER MODIFYING DEEP COPY ENGINE ---");
+        System.out.println("Original: " + originalCar2 + "  <-- Unaffected!");
+        System.out.println("Deep:     " + deepCar);
+    }
+}
